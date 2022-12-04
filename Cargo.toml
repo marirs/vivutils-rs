@@ -1,0 +1,27 @@
+[package]
+name = "vivutils"
+version = "0.0.2"
+description = "Helper crate"
+authors = ["Marirs <marirs@gmail.com>"]
+edition = "2021"
+exclude = ["assets"]
+
+[dependencies]
+log = "0.4.17"
+vivisect = "0.1.11"
+lancelot-flirt = "0.6.5"
+flate2 = "1.0.25"
+
+[lib]
+name = "vivutils"
+path = "src/lib.rs"
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug-assertions = false
+debug = false
+opt-level = 3
+lto = true
