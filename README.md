@@ -1,6 +1,6 @@
 # VivUtils
 
-Utilities for working with vivisect-rs written in Rust.
+Utilities for working with [vivisect-rs](https://github.com/marirs/vivisect-rs) written in Rust.
 
 ### Usage
 ```toml
