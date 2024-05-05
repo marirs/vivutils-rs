@@ -1,6 +1,6 @@
 [package]
 name = "vivutils"
-version = "0.0.2"
+version = "0.0.3"
 description = "Helper crate"
 authors = ["Marirs <marirs@gmail.com>"]
 edition = "2021"
