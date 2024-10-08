@@ -5,12 +5,15 @@ use vivisect::{analysis::Analyzer, workspace::VivWorkspace};
 
 pub struct FlirtFunctionAnalyzer {
     matcher: FlirtSignatureSet,
-    name: String,
+    _name: String,
 }
 
 impl FlirtFunctionAnalyzer {
     pub fn new(matcher: FlirtSignatureSet, name: String) -> Self {
-        FlirtFunctionAnalyzer { matcher, name }
+        FlirtFunctionAnalyzer {
+            matcher,
+            _name: name,
+        }
     }
 }
 
@@ -35,7 +38,7 @@ impl Analyzer for FlirtFunctionAnalyzer {
                     functions_copy.remove(
                         functions_copy
                             .iter()
-                            .position(|x| x.0.clone() == name.to_string())
+                            .position(|x| x.0.clone() == *name)
                             .unwrap(),
                     );
                 }

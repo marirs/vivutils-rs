@@ -1,12 +1,13 @@
-extern crate core;
+#![allow(unused_variables)]
 
+extern crate core;
 use crate::analyzer::FlirtFunctionAnalyzer;
 use flate2::read::GzDecoder;
 use lancelot_flirt::{
     sig::parse,
     {FlirtSignature, FlirtSignatureSet},
 };
-use log::{debug, info};
+use log::debug;
 use std::{
     fs::{self, read, read_to_string},
     io::Read,
@@ -50,7 +51,7 @@ pub fn get_shell_code_workspace_from_file(
 pub fn get_shell_code_workspace(
     buffer: Vec<u8>,
     arch: Option<&str>,
-    analyze: bool,
+    _analyze: bool,
 ) -> VivWorkspace {
     debug!("Received {:?} bytes", buffer.len());
     let base = SHELLCODE_BASE;
@@ -58,7 +59,7 @@ pub fn get_shell_code_workspace(
     workspace.set_meta("Architecture", Some(arch.unwrap().to_string()));
     workspace.set_meta("Platform", Some("pe".to_string()));
     workspace.add_memory_map(base, MM_RWX, "Shellcode", buffer.clone(), None);
-    workspace.add_entry_point(base + 0);
+    workspace.add_entry_point(base); // removed: base + 0
     workspace.set_meta("Format", Some("blob".to_string()));
 
     workspace
@@ -112,45 +113,47 @@ pub fn get_all_xrefs_from(mut workspace: VivWorkspace, va: i32) -> Vec<(i32, i32
 }
 
 pub fn get_imagebase(workspace: VivWorkspace) -> i32 {
-    let entry_point = *workspace.get_entry_points().get(0).unwrap();
+    let entry_point = *workspace.get_entry_points().first().unwrap();
     let base_name = workspace.get_file_by_va(entry_point);
-    if base_name.is_some() {
-        return workspace.get_file_meta(base_name.unwrap().as_str(), "imagebase");
+    if let Some(basename) = base_name {
+        return workspace.get_file_meta(basename.as_str(), "imagebase");
     }
     0
 }
 
 /// vivisect_rs comes with default emulation hooks (imphooks) that emulate
+///
 /// - API calls, e.g. GetProcAddress
 /// - abstractions of library code functionality, e.g. _alloca_probe
-/// in our testing there are inconsistencies in the hook implementation, e.g. around function returns
-/// this function removes all imphooks except ones explicitly allowed
+///
+/// in our testing there are inconsistencies in the hook implementation,
+/// e.g. around function returns this function removes all imphooks except ones explicitly allowed
 pub fn remove_default_vivi_hooks(mut emu: GenericEmulator, allow_list: Option<Vec<String>>) {
-    for hook_Name in emu.get_hooks() {
-        if allow_list.is_some() && allow_list.as_ref().cloned().unwrap().contains(&hook_Name) {
+    for hook_name in emu.get_hooks() {
+        if allow_list.is_some() && allow_list.as_ref().cloned().unwrap().contains(&hook_name) {
             continue;
         }
         let mut index = 0;
-        let t = emu.get_hooks().iter().find(move |x| {
-            return if **x == hook_Name {
+        let _t = emu.get_hooks().iter().find(move |x| {
+            if **x == hook_name {
                 true
             } else {
                 index += 1;
                 false
-            };
+            }
         });
         emu.get_hooks().remove(index);
     }
 }
 
-pub fn is_thunk_function(workspace: VivWorkspace, va: i32) -> bool {
+pub fn is_thunk_function(_workspace: VivWorkspace, _va: i32) -> bool {
     false
 }
 
-pub fn is_library_function(workspace: VivWorkspace, va: i32) -> bool {
+pub fn is_library_function(_workspace: VivWorkspace, _va: i32) -> bool {
     false
 }
 
-pub fn get_function_name(workspace: VivWorkspace, va: i32) -> String {
+pub fn get_function_name(_workspace: VivWorkspace, _va: i32) -> String {
     String::new()
 }

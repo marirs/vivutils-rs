@@ -1,5 +1,6 @@
+#![allow(clippy::bad_bit_mask)]
+
 use log::warn;
-use std::rc::Rc;
 use vivisect::constants::BR_TABLE;
 use vivisect::emulator::{Emulator, GenericEmulator, OpCode};
 use vivisect::workspace::VivWorkspace;
@@ -25,7 +26,7 @@ impl UntilAvMonitor {
         UntilAvMonitor { va }
     }
 
-    pub fn pre_hook<T>(&self, emu: T, op: i32, pc: i32)
+    pub fn pre_hook<T>(&self, _emu: T, _op: i32, pc: i32)
     where
         T: Emulator,
     {
@@ -56,9 +57,9 @@ pub trait EmuHelperMixin {
 /// drv = EmulatorDriver(emu)
 /// drv.readString(0x401000)
 pub struct EmulatorDriver<T> {
-    emu: T,
-    monitors: Vec<Monitor>,
-    hooks: Vec<i32>,
+    _emu: T,
+    _monitors: Vec<Monitor>,
+    _hooks: Vec<i32>,
 }
 
 impl<T> EmulatorDriver<T>
@@ -67,9 +68,9 @@ where
 {
     pub fn new(emu: T) -> Self {
         EmulatorDriver {
-            emu,
-            monitors: Vec::new(),
-            hooks: Vec::new(),
+            _emu: emu,
+            _monitors: Vec::new(),
+            _hooks: Vec::new(),
         }
     }
 }
@@ -79,16 +80,16 @@ where
 /// it should emulate each instruction once (unless REP prefix, and limited to repmax iterations).
 /// use a monitor to receive callbacks describing the found instructions and blocks.
 pub struct FullCoverageEmulatorDriver<T> {
-    emu: GenericEmulator,
+    _emu: GenericEmulator,
     workspace: VivWorkspace,
     monitors: Vec<T>,
     hooks: Vec<i32>,
 }
 
 impl<T> FullCoverageEmulatorDriver<T> {
-    pub fn new(workspace: VivWorkspace, emu: GenericEmulator, size: i32) -> Self {
+    pub fn new(workspace: VivWorkspace, emu: GenericEmulator, _size: i32) -> Self {
         FullCoverageEmulatorDriver {
-            emu,
+            _emu: emu,
             workspace,
             monitors: vec![],
             hooks: vec![],
@@ -111,9 +112,11 @@ impl<T> FullCoverageEmulatorDriver<T> {
     }
 
     /// monitors are collections of callbacks that are invoked at various places:
+    ///
     /// - pre instruction emulation
     /// - post instruction emulation
     /// - during API call
+    ///
     /// see the `Monitor` superclass.
     /// install monitors using this routine `add_monitor`.
     /// there can be multiple monitors added.
@@ -121,7 +124,7 @@ impl<T> FullCoverageEmulatorDriver<T> {
         self.monitors.push(monitor);
     }
 
-    pub fn remove_monitor(&mut self, monitor: Monitor) {
+    pub fn remove_monitor(&mut self, _monitor: Monitor) {
         // self.monitors.contains(&monitor);
     }
 
@@ -135,7 +138,7 @@ impl<T> FullCoverageEmulatorDriver<T> {
 
     pub fn remove_hook(&self) {}
 
-    pub fn is_call(&self, op: i32) {}
+    pub fn is_call(&self, _op: i32) {}
 
-    pub fn run(&self, va: i32) {}
+    pub fn run(&self, _va: i32) {}
 }
