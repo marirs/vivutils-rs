@@ -8,9 +8,9 @@ exclude = ["assets"]
 
 [dependencies]
 log = "0.4.17"
-vivisect = "0.1.12"
+vivisect = "0.1.13"
 lancelot-flirt = "0.8.10"
-flate2 = "1.0.25"
+flate2 = "1.0.34"
 
 [lib]
 name = "vivutils"
